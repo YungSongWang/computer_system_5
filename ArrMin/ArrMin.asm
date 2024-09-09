@@ -1,69 +1,78 @@
+    @sign
+    M=0
+(CHECK_R1)
     @R1
-    D=M-1
+    D=M
+    @ABS_R1
+    D;JLT
+(CHECK_R2)
     @R2
-    M=M+D
+    D=M
+    @ABS_R2
+    D;JLT
 
-    @32767
-    D=A
-    @R0
-    M=D
+(ENTRY)
+    @R1
+    D=M
+    @R2
+    D=D-M
+    @SWAP_R1R2
+    D;JLT
 
 (LOOP)
-(CHECK_TERMINATE)
-	@R1
-	D=M
-	@R2
-	D=D-M
-	@END
-	D;JGT
-	@R1
-	A=M
-	D=M
-    @ELEM_POS
-    D;JGE
-	@ELEM_NEG
-	0;JMP
-(UPDATE)
-	@R1
-	A=M
-	D=M
-	@R0
-	M=D
-(SKIP)
-	@R1
-	M=M+1
-	@LOOP
-	0;JMP
-(END)
-	@END
-	0;JMP
-
-(R0_NEG)
-    
-(R0_POS)
-    // subs
-    @R1
-	A=M
-	D=M
-	@R0
-	D=D-M // substraction, may cause Overflow!
-    @SKIP
-	D;JGE
-    @UPDATE
-    0;JMP
-
-(ELEM_NEG)
-    @R0
-    D=M
-    @R0_NEG
+    @R2
+    MD=M-1
+    @CHECK_SIGN
     D;JLT
-    @UPDATE
+    @R1
+    D=M
+    @R0
+    M=M+D
+    @LOOP
     0;JMP
 
-(ELEM_POS)
-    @R0
+(CHECK_SIGN)
+    @sign
     D=M
-    @R0_POS
-    D;JGE
-    @SKIP
+    @END
+    D;JEQ
+    @R0
+    M=-M
+    @END
+    0;JMP
+
+(END)
+    @END
+    0;JMP
+
+(ABS_R2)
+    @sign
+    M=!M
+    @R2
+    M=-M
+    @ENTRY
+    0;JMP
+
+(ABS_R1)
+    @sign
+    M=!M
+    @R1
+    M=-M
+    @CHECK_R2
+    0;JMP
+
+(SWAP_R1R2)
+    @R1
+    D=M
+    @temp
+    M=D
+    @R2
+    D=M
+    @R1
+    M=D
+    @temp
+    D=M
+    @R2
+    M=D
+    @LOOP
     0;JMP
