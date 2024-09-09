@@ -1,34 +1,78 @@
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/04/Mult.asm
+    @sign
+    M=0
+(CHECK_R1)
+    @R1
+    D=M
+    @ABS_R1
+    D;JLT
+(CHECK_R2)
+    @R2
+    D=M
+    @ABS_R2
+    D;JLT
 
-// Multiplies R0 and R1 and stores the result in R2.
-// (R0, R1, R2 refer to RAM[0], RAM[1], and RAM[3], respectively.)
-
-@R2
-M=0
+(ENTRY)
+    @R1
+    D=M
+    @R2
+    D=D-M
+    @SWAP_R1R2
+    D;JLT
 
 (LOOP)
-// Check loop condition. Quit if R0 <= 0.
-@R0
-D=M
-@END
-D;JLE
+    @R2
+    MD=M-1
+    @CHECK_SIGN
+    D;JLT
+    @R1
+    D=M
+    @R0
+    M=M+D
+    @LOOP
+    0;JMP
 
-// Update loop condition.
-@R0
-M=M-1
-
-// Do the repeated addition.
-@R1
-D=M
-@R2
-M=D+M
-
-@LOOP
-0;JMP
+(CHECK_SIGN)
+    @sign
+    D=M
+    @END
+    D;JEQ
+    @R0
+    M=-M
+    @END
+    0;JMP
 
 (END)
-@END
-0;JMP
+    @END
+    0;JMP
+
+(ABS_R2)
+    @sign
+    M=!M
+    @R2
+    M=-M
+    @ENTRY
+    0;JMP
+
+(ABS_R1)
+    @sign
+    M=!M
+    @R1
+    M=-M
+    @CHECK_R2
+    0;JMP
+
+(SWAP_R1R2)
+    @R1
+    D=M
+    @temp
+    M=D
+    @R2
+    D=M
+    @R1
+    M=D
+    @temp
+    D=M
+    @R2
+    M=D
+    @LOOP
+    0;JMP
