@@ -1,60 +1,69 @@
-// Finds the smallest element in the array of length R2 whose first element is at RAM[R1] and stores the result in R0.
-// (R0, R1, R2 refer to RAM[0], RAM[1], and RAM[2], respectively.)
-
-// Put your code here.
-
-
-    // Initialize R0 with the first element of the array
     @R1
-    A=M
-    D=M
+    D=M-1
+    @R2
+    M=M+D
+
+    @32767
+    D=A
     @R0
     M=D
-
-    // Initialize loop counter
-    @i
-    M=1
 
 (LOOP)
-    // Check if we've reached the end of the array
-    @i
-    D=M
-    @R2
-    D=D-M
-    @END
+(CHECK_TERMINATE)
+	@R1
+	D=M
+	@R2
+	D=D-M
+	@END
+	D;JGT
+	@R1
+	A=M
+	D=M
+    @ELEM_POS
     D;JGE
-
-    // Load the next array element
-    @R1
-    D=M
-    @i
-    A=D+M
-    D=M
-
-    // Compare with current minimum
-    @R0
-    D=D-M
-    @SKIP
-    D;JGE
-
-    // Update minimum if smaller
-    @R1
-    D=M
-    @i
-    A=D+M
-    D=M
-    @R0
-    M=D
-
+	@ELEM_NEG
+	0;JMP
+(UPDATE)
+	@R1
+	A=M
+	D=M
+	@R0
+	M=D
 (SKIP)
-    // Increment loop counter
-    @i
-    M=M+1
+	@R1
+	M=M+1
+	@LOOP
+	0;JMP
+(END)
+	@END
+	0;JMP
 
-    // Continue loop
-    @LOOP
+(R0_NEG)
+    
+(R0_POS)
+    // subs
+    @R1
+	A=M
+	D=M
+	@R0
+	D=D-M // substraction, may cause Overflow!
+    @SKIP
+	D;JGE
+    @UPDATE
     0;JMP
 
-(END)
-    @END
+(ELEM_NEG)
+    @R0
+    D=M
+    @R0_NEG
+    D;JLT
+    @UPDATE
+    0;JMP
+
+(ELEM_POS)
+    @R0
+    D=M
+    @R0_POS
+    D;JGE
+    @SKIP
     0;JMP
